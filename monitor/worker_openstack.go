@@ -1,6 +1,10 @@
 package monitor
 
 import (
+	"strings"
+	"time"
+
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/services"
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
 )
@@ -95,10 +99,6 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 	host.FencedTimes += 1
 	saveHost(host)
 
-	// update host status
-	host.Status = HostEvacuatingStatus
-	saveHost(host)
-
 	err = w.Evacuate(host)
 	if err != nil {
 		return
@@ -119,17 +119,35 @@ func (w *OpenstackWorker) Evacuate(host *database.Host) error {
 		return err
 	}
 
-	services, err := nova.ListServices()
-	if err != nil {
-		plog.Warning("Can't get service list", err)
-		return err
-	}
-	for _, service := range services {
-		if host.Name == service.Host && service.Binary == "nova-compute" {
-			nova.ForceDownService(service)
-			nova.DisableService(service, "disabled by themis monitor")
+	for {
+		var computeService services.Service
+		services, err := nova.ListServices()
+		if err != nil {
+			plog.Warning("Can't get service list", err)
+			return err
 		}
+		for _, service := range services {
+			if host.Name == service.Host && service.Binary == "nova-compute" {
+				computeService = service
+				break
+			}
+		}
+		status := strings.ToLower(computeService.Status)
+		if status != "disabled" {
+			nova.DisableService(computeService, "disabled by themis monitor")
+		}
+
+		state := strings.ToLower(computeService.State)
+		if state != "up" {
+			break
+		}
+
+		time.Sleep(10 * time.Second)
 	}
+
+	// update host status
+	host.Status = HostEvacuatingStatus
+	saveHost(host)
 
 	servers, err := nova.ListServers(host.Name)
 	if err != nil {

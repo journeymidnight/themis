@@ -6,29 +6,29 @@ import (
 )
 
 var openstackDecisionMatrix = []bool{
-		/* +------------+----------+-----------+--------------+ */
-		/* | Management | Storage  | Network   |    Fence     | */
-		/* +------------+----------+-----------+--------------+ */
-		/* | good       | good     | good      | */ false, /* | */
-		/* | good       | good     | bad       | */ true, /*  | */
-		/* | good       | bad      | good      | */ true, /*  | */
-		/* | good       | bad      | bad       | */ true, /*  | */
-		/* | bad        | good     | good      | */ false, /* | */
-		/* | bad        | good     | bad       | */ true, /*  | */
-		/* | bad        | bad      | good      | */ true, /*  | */
-		/* | bad        | bad      | bad       | */ true, /*  | */
-		/* +-----------------------------------+--------------+ */
+	/* +------------+----------+-----------+--------------+ */
+	/* | Management | Storage  | Network   |    Fence     | */
+	/* +------------+----------+-----------+--------------+ */
+	/* | good       | good     | good      | */ false, /* | */
+	/* | good       | good     | bad       | */ true, /*  | */
+	/* | good       | bad      | good      | */ true, /*  | */
+	/* | good       | bad      | bad       | */ true, /*  | */
+	/* | bad        | good     | good      | */ false, /* | */
+	/* | bad        | good     | bad       | */ true, /*  | */
+	/* | bad        | bad      | good      | */ true, /*  | */
+	/* | bad        | bad      | bad       | */ true, /*  | */
+	/* +-----------------------------------+--------------+ */
 }
 
 type OpenstackWorker struct {
 	config         *config.ThemisConfig
 	decisionMatrix []bool
-	flagTagMap  map[string]uint
+	flagTagMap     map[string]uint
 }
 
 func NewOpenstackWorker(config *config.ThemisConfig) *OpenstackWorker {
 
-	var flagManage  uint = 1 << 2
+	var flagManage uint = 1 << 2
 	var flagStorage uint = 1 << 1
 	var flagNetwork uint = 1 << 0
 
@@ -39,9 +39,9 @@ func NewOpenstackWorker(config *config.ThemisConfig) *OpenstackWorker {
 	}
 
 	return &OpenstackWorker{
-		config: config,
+		config:         config,
 		decisionMatrix: openstackDecisionMatrix,
-		flagTagMap: flagTagMap,
+		flagTagMap:     flagTagMap,
 	}
 }
 
@@ -96,10 +96,10 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 	saveHost(host)
 
 	// update host status
-	host.Status = HostEvcuatingStatus
+	host.Status = HostEvacuatingStatus
 	saveHost(host)
 
-	err = w.Evcuate(host)
+	err = w.Evacuate(host)
 	if err != nil {
 		return
 	}
@@ -110,7 +110,7 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 	saveHost(host)
 }
 
-func (w *OpenstackWorker) Evcuate(host *database.Host) error {
+func (w *OpenstackWorker) Evacuate(host *database.Host) error {
 
 	// evacuate all virtual machine on that host
 	nova, err := NewNovaClient(&w.config.Openstack)

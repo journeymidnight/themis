@@ -8,26 +8,25 @@ import (
 )
 
 var convergeDecisionMatrix = []bool{
-		/* +------------+----------|--------------+ */
-		/* | Management | Storage  |    Fence     | */
-		/* +------------+----------+--------------+ */
-		/* | good       | good     | */ false, /* | */
-		/* | good       | bad      | */ true, /*  | */
-		/* | bad        | good     | */ false, /* | */
-		/* | bad        | bad      | */ true, /*  | */
-		/* +-----------------------+--------------+ */
-	}
+	/* +------------+----------|--------------+ */
+	/* | Management | Storage  |    Fence     | */
+	/* +------------+----------+--------------+ */
+	/* | good       | good     | */ false, /* | */
+	/* | good       | bad      | */ true, /*  | */
+	/* | bad        | good     | */ false, /* | */
+	/* | bad        | bad      | */ true, /*  | */
+	/* +-----------------------+--------------+ */
+}
 
 type ConvergeWorker struct {
-
 	config         *config.ThemisConfig
 	decisionMatrix []bool
-	flagTagMap  map[string]uint
+	flagTagMap     map[string]uint
 }
 
 func NewConvergekWorker(config *config.ThemisConfig) *ConvergeWorker {
 
-	var flagManage  uint = 1 << 1
+	var flagManage uint = 1 << 1
 	var flagStorage uint = 1 << 0
 
 	flagTagMap := map[string]uint{
@@ -36,9 +35,9 @@ func NewConvergekWorker(config *config.ThemisConfig) *ConvergeWorker {
 	}
 
 	return &ConvergeWorker{
-		config: config,
+		config:         config,
 		decisionMatrix: convergeDecisionMatrix,
-		flagTagMap: flagTagMap,
+		flagTagMap:     flagTagMap,
 	}
 }
 
@@ -93,30 +92,30 @@ func (w *ConvergeWorker) FenceHost(host *database.Host, states []*database.HostS
 	saveHost(host)
 
 	// update host status
-	host.Status = HostEvcuatingStatus
+	host.Status = HostEvacuatingStatus
 	saveHost(host)
 
-	err = w.Evcuate(host)
+	err = w.Evacuate(host)
 	if err != nil {
 		return
 	}
 
 	// disable host status
-	host.Status = HostEvcuatedStatue
+	host.Status = HostEvacuatedStatue
 	host.Disabled = true
 	saveHost(host)
 }
 
-func (w *ConvergeWorker) Evcuate(host *database.Host) error {
+func (w *ConvergeWorker) Evacuate(host *database.Host) error {
 
 	// evacuate all virtual machine on that host
 	// send host name to catkeeper
-	url :=  w.config.CatKeeper.Url + "/catkeeper/v1/servers/evacuate"
+	url := w.config.CatKeeper.Url + "/catkeeper/v1/servers/evacuate"
 	req := httplib.Post(url)
 
 	reqBody := struct {
 		HostName string `json:"hostname"`
-		User string `json:"user"`
+		User     string `json:"user"`
 	}{
 		host.Name,
 		w.config.CatKeeper.Username,

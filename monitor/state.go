@@ -1,14 +1,14 @@
 package monitor
 
 const (
-	HostUnkownStatus   = "unkown"
-	HostDisabledStatus = "disabled"
-	HostInitialStatus  = "initializing"
-	HostActiveStatus   = "active"
-	HostCheckingStatus = "checking"
-	HostFailedStatus   = "failed"
-	HostFencingStatus  = "fencing"
-	HostFencedStatus   = "fenced"
-	HostEvcuatingStatus = "evcuating"
-	HostEvcuatedStatue = "evcuated"
+	HostUnkownStatus     = "unkown"
+	HostDisabledStatus   = "disabled"
+	HostInitialStatus    = "initializing"
+	HostActiveStatus     = "active"
+	HostCheckingStatus   = "checking"
+	HostFailedStatus     = "failed"
+	HostFencingStatus    = "fencing"
+	HostFencedStatus     = "fenced"
+	HostEvacuatingStatus = "evacuating"
+	HostEvacuatedStatue  = "evacuated"
 )

@@ -105,7 +105,7 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 	}
 
 	// disable host status
-	host.Status = HostFencedStatus
+	host.Status = HostEvacuatedStatus
 	host.Disabled = true
 	saveHost(host)
 }

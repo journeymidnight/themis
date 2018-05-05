@@ -10,5 +10,5 @@ const (
 	HostFencingStatus    = "fencing"
 	HostFencedStatus     = "fenced"
 	HostEvacuatingStatus = "evacuating"
-	HostEvacuatedStatue  = "evacuated"
+	HostEvacuatedStatus  = "evacuated"
 )

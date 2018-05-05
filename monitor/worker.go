@@ -32,15 +32,20 @@ func powerOffHost(host *database.Host) error {
 		IPMIFencers = append(IPMIFencers, fence.NewFencer(fencer))
 	}
 
+	fenced := false
 	plog.Debug("Begin execute fence operation")
 	for _, fencer := range IPMIFencers {
-		if err := fencer.Fence(); err != nil {
+		if err = fencer.Fence(); err != nil {
 			plog.Warningf("Fence operation failed on host %s", host.Name)
 			continue
 		}
+		fenced = true
 		plog.Infof("Fence operation successed on host: %s", host.Name)
 		break
 	}
-
-	return nil
+	if fenced {
+		return nil
+	} else {
+		return err
+	}
 }

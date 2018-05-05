@@ -101,7 +101,7 @@ func (w *ConvergeWorker) FenceHost(host *database.Host, states []*database.HostS
 	}
 
 	// disable host status
-	host.Status = HostEvacuatedStatue
+	host.Status = HostEvacuatedStatus
 	host.Disabled = true
 	saveHost(host)
 }

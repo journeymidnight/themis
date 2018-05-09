@@ -52,11 +52,11 @@ func (e *Election) Campaign(ctx context.Context) <-chan error {
 }
 
 func (e *Election) Proclaim() (bool, error) {
-	sql := `INSERT IGNORE INTO election_record (election_name, leader_name, last_update) VALUES (?, ?, ?)
+	sql := `INSERT IGNORE INTO election_record (election_name, leader_name, last_update) VALUES (?, ?, now())
 			ON DUPLICATE KEY UPDATE
 			leader_name = IF(last_update < DATE_SUB(VALUES(last_update), INTERVAL ? SECOND), VALUES(leader_name), leader_name),
 			last_update = IF(leader_name = VALUES(leader_name), VALUES(last_update), last_update)`
-	res, err := e.Engine.Exec(sql, defaultElectionName, e.LeaderName, time.Now(), defaultTermOfCampaign)
+	res, err := e.Engine.Exec(sql, defaultElectionName, e.LeaderName, defaultTermOfCampaign)
 
 	if err != nil {
 		return false, err

@@ -25,6 +25,8 @@ type ThemisConfig struct {
 
 	Fence FenceConfig
 
+	Worker WorkerConfig
+
 	Openstack OpenstackConfig
 
 	CatKeeper CatkeeperConfig
@@ -33,6 +35,7 @@ type ThemisConfig struct {
 type DatabaseConfig struct {
 	Driver   string
 	Host     string
+	Port	 string // for mysql or tidb
 	Username string
 	Password string
 	Name     string
@@ -62,6 +65,10 @@ type CatkeeperConfig struct {
 	Username string
 }
 
+type WorkerConfig struct {
+	Type string
+}
+
 func NewConfig(configFile string) *ThemisConfig {
 
 	defaultCfg := NewDefaultConfig()
@@ -86,6 +93,7 @@ func NewDefaultConfig() *ThemisConfig {
 		Database: DatabaseConfig{
 			Driver:   "sqlite3",
 			Path:     "themis.db",
+			Port:	  "3306",
 			Host:     "",
 			Username: "",
 			Password: "",
@@ -93,6 +101,9 @@ func NewDefaultConfig() *ThemisConfig {
 		Monitors: map[string]MonitorConfig{},
 		Fence: FenceConfig{
 			DisableFenceOps: false,
+		},
+		Worker: WorkerConfig{
+			Type: 	"openstack",
 		},
 		Openstack: OpenstackConfig{
 			AuthURL:     "http://localhost:5000",

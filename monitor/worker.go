@@ -15,7 +15,13 @@ type WorkerInterface interface {
 
 func NewWorker(config *config.ThemisConfig) WorkerInterface {
 
-	return NewOpenstackWorker(config)
+	if config.Worker.Type == "openstack" {
+		return NewOpenstackWorker(config)
+	} else if config.Worker.Type == "converge" {
+		return NewConvergekWorker(config)
+	}
+
+	return nil
 }
 
 func powerOffHost(host *database.Host) error {

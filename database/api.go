@@ -26,8 +26,8 @@ func Engine(cfg *config.DatabaseConfig) *xorm.Engine {
 		url := ""
 		switch cfg.Driver {
 		case "mysql":
-			url = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true",
-				cfg.Username, cfg.Password, cfg.Host, cfg.Name)
+			url = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true",
+				cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.Name)
 		case "sqlite3":
 			url = cfg.Path
 		default:

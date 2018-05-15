@@ -92,6 +92,28 @@ func (c *ThemisClient) DisableHost(id int) (Host, error) {
 	return host, err
 }
 
+func (c *ThemisClient) DisableAllHost() error {
+
+	var res interface{}
+
+	url := fmt.Sprintf("%s/disableAllHost", c.BaseUrl)
+	result := c.http.Post(url, nil, nil)
+	err := result.ExtractInto(&res)
+
+	return err
+}
+
+func (c *ThemisClient) EnableAllHost() error {
+
+	var res interface{}
+
+	url := fmt.Sprintf("%s/enableAllHost", c.BaseUrl)
+	result := c.http.Post(url, nil, nil)
+	err := result.ExtractInto(&res)
+
+	return err
+}
+
 type Fencer struct {
 	// ID uniquely identifies this fencer amongst all other fencers.
 	ID int `json:"id"`

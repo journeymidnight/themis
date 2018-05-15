@@ -230,3 +230,35 @@ func GetFencedTimes() (int64 ,error) {
 
 	return fencedTimes, err
 }
+
+func SetAllHostDisable() error {
+
+	sql := "update host set disabled=true"
+
+	res, err := engine.Exec(sql)
+	if err != nil {
+		return err
+	}
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func SetAllHostEnable() error {
+
+	sql := "update host set disabled=false"
+
+	res, err := engine.Exec(sql)
+	if err != nil {
+		return err
+	}
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

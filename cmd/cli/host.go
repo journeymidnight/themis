@@ -24,6 +24,8 @@ func NewHostCommand() *cobra.Command {
 	hostCmd.AddCommand(newHostListCommand())
 	hostCmd.AddCommand(newHostEnableCommand())
 	hostCmd.AddCommand(newHostDisableCommand())
+	hostCmd.AddCommand(newHostDisableAllCommand())
+	hostCmd.AddCommand(newHostEnableAllCommand())
 
 	return hostCmd
 }
@@ -77,6 +79,24 @@ func newHostDisableCommand() *cobra.Command {
 		Use:   "disable <host id>",
 		Short: "Disable a host",
 		Run:   hostDisableCommandFunc,
+	}
+	return cmd
+}
+
+func newHostDisableAllCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "disableAll",
+		Short: "Disable all host",
+		Run:   hostDisableAllCommandFunc,
+	}
+	return cmd
+}
+
+func newHostEnableAllCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "enableAll",
+		Short: "enable all host",
+		Run:   hostEnableAllCommandFunc,
 	}
 	return cmd
 }
@@ -184,4 +204,38 @@ func hostDisableCommandFunc(cmd *cobra.Command, args []string) {
 	}
 
 	displayHosts([]client.Host{host})
+}
+
+func hostDisableAllCommandFunc(cmd *cobra.Command, args []string) {
+	themis := client.NewThemisClient(globalFlags.Url)
+
+	err := themis.DisableAllHost()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+
+	hosts, err := themis.ListHosts()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	displayHosts(hosts)
+}
+
+func hostEnableAllCommandFunc(cmd *cobra.Command, args []string) {
+	themis := client.NewThemisClient(globalFlags.Url)
+
+	err := themis.EnableAllHost()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+
+	hosts, err := themis.ListHosts()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	displayHosts(hosts)
 }

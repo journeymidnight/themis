@@ -20,6 +20,8 @@ func init() {
 	Router().DELETE("/hosts/:id", DeleteHost)
 	Router().POST("/hosts/:id/enable", EnableHost)
 	Router().POST("/hosts/:id/disable", DisableHost)
+	Router().POST("/disableAllHost", DisableAllHost)
+	Router().POST("/enableAllHost", EnableAllHost)
 }
 
 func CreateHost(c *gin.Context) {
@@ -122,4 +124,24 @@ func DisableHost(c *gin.Context) {
 	host.Disabled = true
 	database.HostUpdateFields(host, "disabled")
 	c.JSON(http.StatusAccepted, host)
+}
+
+func DisableAllHost(c *gin.Context) {
+
+	err := database.SetAllHostDisable()
+	if err != nil {
+		AbortWithError(http.StatusInternalServerError, err)
+	}
+
+	c.JSON(http.StatusAccepted, "disable all hosts success")
+}
+
+func EnableAllHost(c *gin.Context) {
+
+	err := database.SetAllHostEnable()
+	if err != nil {
+		AbortWithError(http.StatusInternalServerError, err)
+	}
+
+	c.JSON(http.StatusAccepted, "enable all hosts success")
 }

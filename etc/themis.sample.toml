@@ -191,3 +191,21 @@
 # Catkeeper's user
 #
 # username = "admin"
+
+################################################################
+# Mail configurations
+################################################################
+[mail]
+#
+# The host and SMTP sender used for mail notifications
+#
+# smtpHost = "smtp.qq.com:25"
+#
+# smtpUser = "729082651@qq.com"
+#
+# smtpPassword = "vgwhiwvmwbzzbeba"
+#
+# sendTo = [
+#   "923620737@qq.com",
+#   "ly5026@yeah.net"
+#]

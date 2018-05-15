@@ -5,6 +5,7 @@ import (
 
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
+	"github.com/ljjjustin/themis/mail"
 )
 
 const stateTransitionInterval = 60
@@ -12,12 +13,14 @@ const stateTransitionInterval = 60
 type PolicyEngine struct {
 
 	worker WorkerInterface
+	config *config.ThemisConfig
 }
 
 func NewPolicyEngine(config *config.ThemisConfig) *PolicyEngine {
 
 	return &PolicyEngine{
 		worker: NewWorker(config),
+		config: config,
 	}
 }
 
@@ -179,7 +182,14 @@ func (p *PolicyEngine) HandleEvents(events Events) {
 
 		// judge if a host is down
 		if p.worker.GetDecision(host, states) {
-			p.worker.FenceHost(host, states)
+
+			if !host.Notified {
+
+				//send notification to mail
+				go mail.SendAlert(p.config, host)
+			}
+
+			//p.worker.FenceHost(host, states)
 		}
 	}
 }

@@ -30,6 +30,8 @@ type ThemisConfig struct {
 	Openstack OpenstackConfig
 
 	CatKeeper CatkeeperConfig
+
+	Mail MailConfig
 }
 
 type DatabaseConfig struct {
@@ -69,6 +71,13 @@ type WorkerConfig struct {
 	Type string
 }
 
+type MailConfig struct {
+	SmtpHost 	string
+	SmtpUser 	string
+	SmtpPassword 	string
+	SendTo		[]string
+}
+
 func NewConfig(configFile string) *ThemisConfig {
 
 	defaultCfg := NewDefaultConfig()
@@ -80,6 +89,7 @@ func NewConfig(configFile string) *ThemisConfig {
 			plog.Fatalf("Failed to load config file due to %s\n", err)
 		}
 	}
+
 	return defaultCfg
 }
 
@@ -117,6 +127,7 @@ func NewDefaultConfig() *ThemisConfig {
 			Url:		"http://127.0.0.1",
 			Username:	"admin",
 		},
+		Mail: MailConfig{},
 	}
 }
 

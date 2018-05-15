@@ -96,7 +96,6 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 
 	// update host status
 	host.Status = HostFencedStatus
-	host.FencedTimes += 1
 	saveHost(host)
 
 	err = w.Evacuate(host)

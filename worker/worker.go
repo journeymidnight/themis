@@ -4,13 +4,18 @@ import (
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
 	"github.com/ljjjustin/themis/fence"
+	"github.com/ljjjustin/themis/utils"
+	"time"
+	"github.com/coreos/pkg/capnslog"
 )
 
-var doFenceStatus = HostFailedStatus
+var plog = capnslog.NewPackageLogger("github.com/ljjjustin/themis", "worker")
+
+var doFenceStatus = utils.HostFailedStatus
 
 type WorkerInterface interface {
 	GetDecision(host *database.Host, states []*database.HostState) bool
-	FenceHost(host *database.Host, states []*database.HostState)
+	FenceHost(host *database.Host)
 }
 
 func NewWorker(config *config.ThemisConfig) WorkerInterface {
@@ -54,4 +59,9 @@ func powerOffHost(host *database.Host) error {
 	} else {
 		return err
 	}
+}
+
+func saveHost(host *database.Host) {
+	host.UpdatedAt = time.Now()
+	database.HostUpdateFields(host, "status", "disabled", "updated_at")
 }

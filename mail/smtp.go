@@ -38,27 +38,22 @@ func SendAlert(config *config.ThemisConfig, host *database.Host) {
 		to = to + ";" + config.Mail.SendTo[i]
 	}
 
-	for {
-		plog.Info("send notification mail to ", to)
+	plog.Info("send notification mail to ", to)
 
-		err := sendMail(config.Mail.SmtpUser, config.Mail.SmtpPassword, config.Mail.SmtpHost, to, subject, body, mailtype)
-		if err != nil {
-			plog.Warningf("send notification mail to %s failed : %s", to, err)
-		}
-
-		//check db if send false -> break
-		hostFromDB, err := database.HostGetById(host.Id)
-		if err != nil {
-			plog.Warningf("Can't find Host %s.", host.Id)
-		}
-
-		if !hostFromDB.Notified {
-			plog.Debug("bd notified from true to false....stop notify")
-			break
-		}
-
-		time.Sleep(60 * time.Second)
+	err := sendMail(config.Mail.SmtpUser, config.Mail.SmtpPassword, config.Mail.SmtpHost, to, subject, body, mailtype)
+	if err != nil {
+		plog.Warningf("send notification mail to %s failed : %s", to, err)
 	}
+
+	/*//check db if send false -> break
+	hostFromDB, err := database.HostGetById(host.Id)
+	if err != nil {
+		plog.Warningf("Can't find Host %s.", host.Id)
+	}
+
+	if !hostFromDB.Notified {
+		plog.Debug("bd notified from true to false....stop notify")
+	}*/
 
 	return
 }

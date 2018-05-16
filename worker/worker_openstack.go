@@ -7,6 +7,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/services"
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
+	"github.com/ljjjustin/themis/utils"
 )
 
 var openstackDecisionMatrix = []bool{
@@ -71,7 +72,7 @@ func (w *OpenstackWorker) GetDecision(host *database.Host, states []*database.Ho
 	return statusDecision && w.decisionMatrix[decision]
 }
 
-func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.HostState) {
+func (w *OpenstackWorker) FenceHost(host *database.Host) {
 	defer func() {
 		if err := recover(); err != nil {
 			plog.Warning("unexpected error during HandleEvents: ", err)
@@ -86,7 +87,7 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 
 	plog.Infof("Begin fence host %s", host.Name)
 	// update host status
-	host.Status = HostFencingStatus
+	host.Status = utils.HostFencingStatus
 	saveHost(host)
 
 	err := powerOffHost(host)
@@ -95,7 +96,7 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 	}
 
 	// update host status
-	host.Status = HostFencedStatus
+	host.Status = utils.HostFencedStatus
 	saveHost(host)
 
 	err = w.Evacuate(host)
@@ -104,7 +105,7 @@ func (w *OpenstackWorker) FenceHost(host *database.Host, states []*database.Host
 	}
 
 	// disable host status
-	host.Status = HostEvacuatedStatus
+	host.Status = utils.HostEvacuatedStatus
 	host.Disabled = true
 	saveHost(host)
 }
@@ -145,7 +146,7 @@ func (w *OpenstackWorker) Evacuate(host *database.Host) error {
 	}
 
 	// update host status
-	host.Status = HostEvacuatingStatus
+	host.Status = utils.HostEvacuatingStatus
 	saveHost(host)
 
 	servers, err := nova.ListServers(host.Name)

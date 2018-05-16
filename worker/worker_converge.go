@@ -3,6 +3,7 @@ package monitor
 import (
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
+	"github.com/ljjjustin/themis/utils"
 
 	"github.com/astaxie/beego/httplib"
 )
@@ -63,7 +64,7 @@ func (w *ConvergeWorker) GetDecision(host *database.Host, states []*database.Hos
 	return statusDecision && w.decisionMatrix[decision]
 }
 
-func (w *ConvergeWorker) FenceHost(host *database.Host, states []*database.HostState) {
+func (w *ConvergeWorker) FenceHost(host *database.Host) {
 	defer func() {
 		if err := recover(); err != nil {
 			plog.Warning("unexpected error during HandleEvents: ", err)
@@ -78,7 +79,7 @@ func (w *ConvergeWorker) FenceHost(host *database.Host, states []*database.HostS
 
 	plog.Infof("Begin fence host %s", host.Name)
 	// update host status
-	host.Status = HostFencingStatus
+	host.Status = utils.HostFencingStatus
 	saveHost(host)
 
 	err := powerOffHost(host)
@@ -87,11 +88,11 @@ func (w *ConvergeWorker) FenceHost(host *database.Host, states []*database.HostS
 	}
 
 	// update host status
-	host.Status = HostFencedStatus
+	host.Status = utils.HostFencedStatus
 	saveHost(host)
 
 	// update host status
-	host.Status = HostEvacuatingStatus
+	host.Status = utils.HostEvacuatingStatus
 	saveHost(host)
 
 	err = w.Evacuate(host)
@@ -100,7 +101,7 @@ func (w *ConvergeWorker) FenceHost(host *database.Host, states []*database.HostS
 	}
 
 	// disable host status
-	host.Status = HostEvacuatedStatus
+	host.Status = utils.HostEvacuatedStatus
 	host.Disabled = true
 	saveHost(host)
 }

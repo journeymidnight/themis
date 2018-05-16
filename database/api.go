@@ -249,7 +249,7 @@ func SetAllHostDisable() error {
 
 func SetAllHostEnable() error {
 
-	sql := "update host set disabled = false, status = 'initializing', updated_at=?"
+	sql := "update host set disabled = false, status = 'initializing', notified = false, updated_at=?"
 
 	res, err := engine.Exec(sql,time.Now())
 	if err != nil {

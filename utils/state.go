@@ -1,4 +1,4 @@
-package monitor
+package utils
 
 const (
 	HostUnkownStatus     = "unkown"

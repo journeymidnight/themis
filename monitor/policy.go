@@ -6,20 +6,22 @@ import (
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
 	"github.com/ljjjustin/themis/mail"
+	worker "github.com/ljjjustin/themis/worker"
+	"github.com/ljjjustin/themis/utils"
 )
 
 const stateTransitionInterval = 60
 
 type PolicyEngine struct {
 
-	worker WorkerInterface
+	worker worker.WorkerInterface
 	config *config.ThemisConfig
 }
 
 func NewPolicyEngine(config *config.ThemisConfig) *PolicyEngine {
 
 	return &PolicyEngine{
-		worker: NewWorker(config),
+		worker: worker.NewWorker(config),
 		config: config,
 	}
 }
@@ -73,25 +75,25 @@ func updateHostFSM(host *database.Host, states []*database.HostState) {
 
 	duration := time.Since(host.UpdatedAt).Seconds()
 	switch host.Status {
-	case HostActiveStatus:
+	case utils.HostActiveStatus:
 		if hasAnyFailure(states) {
-			host.Status = HostCheckingStatus
+			host.Status = utils.HostCheckingStatus
 			saveHost(host)
 		}
-	case HostInitialStatus:
+	case utils.HostInitialStatus:
 		if duration >= stateTransitionInterval {
 			if isAllActive(states) {
-				host.Status = HostActiveStatus
+				host.Status = utils.HostActiveStatus
 				saveHost(host)
 			}
 		}
-	case HostCheckingStatus:
+	case utils.HostCheckingStatus:
 		if duration >= stateTransitionInterval {
 			if isAllActive(states) {
-				host.Status = HostActiveStatus
+				host.Status = utils.HostActiveStatus
 				saveHost(host)
 			} else if hasFatalFailure(states) {
-				host.Status = HostFailedStatus
+				host.Status = utils.HostFailedStatus
 				saveHost(host)
 			}
 		}
@@ -126,7 +128,7 @@ func (p *PolicyEngine) HandleEvents(events Events) {
 			// save to database
 			host = &database.Host{
 				Name:     hostname,
-				Status:   HostInitialStatus,
+				Status:   utils.HostInitialStatus,
 				Disabled: false,
 			}
 			if err := database.HostInsert(host); err != nil {

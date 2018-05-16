@@ -1,4 +1,4 @@
-package monitor
+package worker
 
 import (
 	"github.com/gophercloud/gophercloud"

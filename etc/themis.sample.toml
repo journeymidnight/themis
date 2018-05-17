@@ -199,11 +199,11 @@
 #
 # The host and SMTP sender used for mail notifications
 #
-# smtpHost = "smtp.qq.com:25"
+# smtpHost = "smtp.hnair.net:587"
 #
-# smtpUser = "729082651@qq.com"
+# smtpUser = ""
 #
-# smtpPassword = "vgwhiwvmwbzzbeba"
+# smtpPassword = ""
 #
 # sendTo = [
 #   "923620737@qq.com",

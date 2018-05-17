@@ -35,6 +35,7 @@ func init() {
 		NewHostCommand(),
 		NewFencerCommand(),
 		NewLeaderCommand(),
+		ExecuateFencerCommand(),
 	)
 }
 

@@ -190,3 +190,22 @@ func (c *ThemisClient) GetLeader() (ElectionRecord, error) {
 
 	return leader, err
 }
+
+type ConfigFile struct {
+	ConfigFile string `json:"config_file"`
+}
+
+func (c *ThemisClient) ExecuteFencerFunc(id int, configFile string) (string, error) {
+
+	var config = ConfigFile{ConfigFile: configFile}
+
+	url := fmt.Sprintf("%s/fencer/host/%d", c.BaseUrl, id)
+
+	result := c.http.Post(url, &config, nil)
+
+	var resultStr string
+
+	err := result.ExtractInto(&resultStr)
+
+	return resultStr, err
+}

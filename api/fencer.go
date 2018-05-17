@@ -46,6 +46,9 @@ func FenceOneHost(c *gin.Context) {
 
 	if worker.GetDecision(host, states) {
 		worker.FenceHost(host)
+		c.JSON(http.StatusAccepted, host)
+	} else {
+		c.JSON(http.StatusNotAcceptable, host)
 	}
 }
 

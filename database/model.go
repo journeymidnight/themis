@@ -22,10 +22,10 @@ type Host struct {
 	Id        int       `json:"id" xorm:"pk autoincr"`
 	Name      string    `json:"name" binding:"required" xorm:"varchar(64) unique notnull"`
 	Status    string    `json:"status" xrom:"varchar(64) default 'initializing'"`
-	Disabled  bool      `json:"disabled" xorm:"tinyint(1) default 0"`
+	Disabled  bool      `json:"disabled" xorm:"tinyint(1) default false"`
 	UpdatedAt time.Time `json:"updated_at" xorm:"TIMESTAMP updated"`
 	FencedTimes int	    `json:"fenced_times" xorm:"default 0"`
-	Notified bool	    `json:"notified" xorm:"tinyint(1) default 0"`
+	Notified bool	    `json:"notified" xorm:"tinyint(1) default false"`
 }
 
 type HostState struct {

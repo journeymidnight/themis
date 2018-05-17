@@ -5,7 +5,6 @@ import (
 	"github.com/ljjjustin/themis/database"
 	"github.com/ljjjustin/themis/fence"
 	"github.com/ljjjustin/themis/utils"
-	"time"
 	"github.com/coreos/pkg/capnslog"
 )
 
@@ -62,6 +61,5 @@ func powerOffHost(host *database.Host) error {
 }
 
 func saveHost(host *database.Host) {
-	host.UpdatedAt = time.Now()
-	database.HostUpdateFields(host, "status", "disabled", "updated_at")
+	database.HostUpdateFields(host, "status", "disabled")
 }

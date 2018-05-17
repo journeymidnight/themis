@@ -15,17 +15,17 @@ type ElectionRecord struct {
 	Id           uint32    `json:"id" xorm:"autoincr pk"`
 	ElectionName string    `json:"election_name" xorm:"varchar(64) unique notnull"`
 	LeaderName   string    `json:"leader_name" xorm:"varchar(64) notnull"`
-	LastUpdate   time.Time `json:"last_update" xorm:"TIMESTAMP"`
+	LastUpdate   time.Time `json:"last_update" xorm:"TIMESTAMP default 'CURRENT_TIMESTAMP'"`
 }
 
 type Host struct {
 	Id        int       `json:"id" xorm:"pk autoincr"`
 	Name      string    `json:"name" binding:"required" xorm:"varchar(64) unique notnull"`
 	Status    string    `json:"status" xrom:"varchar(64) default 'initializing'"`
-	Disabled  bool      `json:"disabled" xorm:"tinyint(1) default false"`
-	UpdatedAt time.Time `json:"updated_at" xorm:"TIMESTAMP"`
+	Disabled  bool      `json:"disabled" xorm:"tinyint(1) default 0"`
+	UpdatedAt time.Time `json:"updated_at" xorm:"TIMESTAMP updated"`
 	FencedTimes int	    `json:"fenced_times" xorm:"default 0"`
-	Notified bool	    `json:"notified" xorm:"tinyint(1) default false"`
+	Notified bool	    `json:"notified" xorm:"tinyint(1) default 0"`
 }
 
 type HostState struct {

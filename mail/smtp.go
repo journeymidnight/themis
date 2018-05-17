@@ -2,8 +2,6 @@ package mail
 
 import (
 	"net/smtp"
-	"strings"
-	"time"
 	"net"
 	"fmt"
 
@@ -28,46 +26,29 @@ func SendAlert(config *config.ThemisConfig, host *database.Host) {
 
 	body := "host HA 检测到 节点 " + host.Name + " down,请及时处理。"
 
-	to := config.Mail.SendTo[0]
-	for i := 1 ; i < len(config.Mail.SendTo) ; i ++ {
-
-		to = to + ";" + config.Mail.SendTo[i]
-	}
+	to := config.Mail.SendTo
 
 	plog.Info("send notification mail to ", to)
 
-	err := sendMail(config.Mail.SmtpUser, config.Mail.SmtpPassword, config.Mail.SmtpHost, to, subject, body)
+	err := sendMail(config.Mail.SmtpUser, config.Mail.SmtpPassword, config.Mail.SmtpHost, subject, body, to)
 	if err != nil {
 		plog.Warningf("send notification mail to %s failed : %s", to, err)
 	}
-
-	/*
-	//check db if send false -> break
-	hostFromDB, err := database.HostGetById(host.Id)
-	if err != nil {
-		plog.Warningf("Can't find Host %s.", host.Id)
-	}
-
-	if !hostFromDB.Notified {
-		plog.Debug("bd notified from true to false....stop notify")
-	}*/
 
 	return
 }
 
 func saveHost(host *database.Host) {
-	host.UpdatedAt = time.Now()
-	database.HostUpdateFields(host, "notified", "updated_at", "fenced_times")
+	database.HostUpdateFields(host, "notified", "fenced_times")
 }
 
-func sendMail(user, password, host, to, subject, body string) error {
+func sendMail(user, password, host, subject, body string, to []string) error {
 
 	auth := NewLoginAuth(user, password)
 
 	msg := []byte(body)
 
-	send_to := strings.Split(to, ";")
-	err := SendToMail(host, auth, user, send_to, msg, subject)
+	err := SendToMail(host, auth, user, to, msg, subject)
 
 	return err
 }

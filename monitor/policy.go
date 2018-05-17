@@ -1,8 +1,6 @@
 package monitor
 
 import (
-	"time"
-
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
 	"github.com/ljjjustin/themis/mail"
@@ -27,8 +25,7 @@ func NewPolicyEngine(config *config.ThemisConfig) *PolicyEngine {
 }
 
 func saveHost(host *database.Host) {
-	host.UpdatedAt = time.Now()
-	database.HostUpdateFields(host, "status", "disabled", "updated_at")
+	database.HostUpdateFields(host, "status", "disabled")
 }
 
 func isAllActive(states []*database.HostState) bool {
@@ -73,7 +70,16 @@ func hasFatalFailure(states []*database.HostState) bool {
 
 func updateHostFSM(host *database.Host, states []*database.HostState) {
 
-	duration := time.Since(host.UpdatedAt).Seconds()
+	//duration := time.Since(host.UpdatedAt).Seconds()
+
+	currentTime, err := database.CurrentTime()
+	if err != nil {
+		plog.Warningf("Can't get current time %s.", err)
+		return
+	}
+
+	duration := currentTime.Sub(host.UpdatedAt).Seconds()
+
 	switch host.Status {
 	case utils.HostActiveStatus:
 		if hasAnyFailure(states) {

@@ -107,8 +107,7 @@ func EnableHost(c *gin.Context) {
 	host.Disabled = false
 	host.Status = HostInitialStatus
 	host.Notified = false
-	host.UpdatedAt = time.Now()
-	database.HostUpdateFields(host, "status", "disabled", "updated_at")
+	database.HostUpdateFields(host, "status", "disabled")
 	c.JSON(http.StatusAccepted, host)
 }
 
@@ -124,6 +123,7 @@ func DisableHost(c *gin.Context) {
 
 	host.Disabled = true
 	database.HostUpdateFields(host, "disabled")
+
 	c.JSON(http.StatusAccepted, host)
 }
 

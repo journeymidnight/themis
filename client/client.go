@@ -195,7 +195,7 @@ type ConfigFile struct {
 	ConfigFile string `json:"config_file"`
 }
 
-func (c *ThemisClient) ExecuteFencerFunc(id int, configFile string) (string, error) {
+func (c *ThemisClient) ExecuteFencerFunc(id int, configFile string) (interface{}, error) {
 
 	var config = ConfigFile{ConfigFile: configFile}
 
@@ -203,9 +203,9 @@ func (c *ThemisClient) ExecuteFencerFunc(id int, configFile string) (string, err
 
 	result := c.http.Post(url, &config, nil)
 
-	var resultStr string
+	var resultStr interface{}
 
-	err := result.ExtractInto(&resultStr)
+	err := result.ExtractInto(resultStr)
 
 	return resultStr, err
 }

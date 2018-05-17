@@ -106,6 +106,44 @@ func HostUpdateFields(host *Host, fields ...string) error {
 	return err
 }
 
+/*func HostUpdateFields(host *Host, fields ...string) error {
+
+	sql := "update host set update_at = now()"
+	for _, field := range fields{
+
+		var subsql string
+
+		if fields == "name" {
+			subsql = ", name = " + host.Name
+		} else if fields == "notified" {
+			subsql = ", notified = " + host.Notified
+		} else if field == "disabled" {
+			subsql = ", disabled" + host.Disabled
+		} else if field == "status" {
+			subsql = ", status" + host.Status
+		} else if field == "fenced_times" {
+			subsql = ", fenced_times" + host.FencedTimes
+		} else {
+			subsql = ""
+		}
+
+		sql += subsql
+	}
+
+	sql = sql + "where id = " + host.Id
+
+	res, err := engine.Exec(sql)
+	if err != nil {
+		return err
+	}
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}*/
+
 func HostDelete(id int) error {
 	_, err := engine.ID(id).Delete(new(Host))
 	return err
@@ -233,7 +271,7 @@ func GetFencedTimes() (int64 ,error) {
 
 func SetAllHostDisable() error {
 
-	sql := "update host set disabled=true"
+	sql := "update host set disabled = true, updated_at= now()"
 
 	res, err := engine.Exec(sql)
 	if err != nil {
@@ -249,9 +287,9 @@ func SetAllHostDisable() error {
 
 func SetAllHostEnable() error {
 
-	sql := "update host set disabled = false, status = 'initializing', notified = false, updated_at=?"
+	sql := "update host set disabled = false, status = 'initializing', notified = false, updated_at= now()"
 
-	res, err := engine.Exec(sql,time.Now())
+	res, err := engine.Exec(sql)
 	if err != nil {
 		return err
 	}
@@ -261,4 +299,22 @@ func SetAllHostEnable() error {
 	}
 
 	return nil
+}
+
+func CurrentTime() (*time.Time, error) {
+
+	sql := "select now() as time"
+	result, err := engine.Query(sql)
+	if err != nil {
+		return nil, err
+	}
+
+	dbtime := string(result[0]["time"][:])
+
+	parseTime, err := time.ParseInLocation("2006-01-02T15:04:05Z", dbtime, time.Local)
+	if err != nil {
+		return nil, err
+	}
+
+	return &parseTime, nil
 }

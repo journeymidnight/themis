@@ -8,7 +8,6 @@ import (
 	"github.com/ljjjustin/themis/config"
 	"github.com/ljjjustin/themis/database"
 	"github.com/coreos/pkg/capnslog"
-	"encoding/base64"
 	"crypto/tls"
 	"errors"
 )
@@ -48,14 +47,12 @@ func sendMail(user, password, host, subject, body string, to []string) error {
 
 	auth := NewLoginAuth(user, password)
 
-	msg := []byte(body)
-
-	err := SendToMail(host, auth, user, to, msg, subject)
+	err := SendToMail(host, auth, user, to, body, subject)
 
 	return err
 }
 
-func SendToMail(addr string, a smtp.Auth, from string, to []string, msg []byte, subject string) error {
+func SendToMail(addr string, a smtp.Auth, from string, to []string, msg string, subject string) error {
 	c, err := smtp.Dial(addr)
 	host, _, _ := net.SplitHostPort(addr)
 	if err != nil {
@@ -94,16 +91,26 @@ func SendToMail(addr string, a smtp.Auth, from string, to []string, msg []byte, 
 		return err
 	}
 
+	tostr := to[0]
+	for i := 1; i < len(to); i ++ {
+
+		tostr = tostr + ";" + to[i]
+	}
+
 	header := make(map[string]string)
+	header["To"] = tostr
+	header["From"] = from
 	header["Subject"] = subject
 	header["MIME-Version"] = "1.0"
 	header["Content-Type"] = "text/plain; charset=\"utf-8\""
-	header["Content-Transfer-Encoding"] = "base64"
+	//header["Content-Transfer-Encoding"] = "base64"
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
 	}
-	message += "\r\n" + base64.StdEncoding.EncodeToString(msg)
+
+	//message += "\r\n" + base64.StdEncoding.EncodeToString(msg)
+	message += "\r\n" + msg
 
 	_, err = w.Write([]byte(message))
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"errors"
+	"github.com/astaxie/beego/httplib"
 )
 
 type ThemisClient struct {
@@ -195,17 +197,25 @@ type ConfigFile struct {
 	ConfigFile string `json:"config_file"`
 }
 
-func (c *ThemisClient) ExecuteFencerFunc(id int, configFile string) (interface{}, error) {
+func (c *ThemisClient) ExecuteFencerFunc(id int, configFile string) error {
 
 	var config = ConfigFile{ConfigFile: configFile}
 
 	url := fmt.Sprintf("%s/fencer/host/%d", c.BaseUrl, id)
 
-	result := c.http.Post(url, &config, nil)
+	//result := c.http.Post(url, &config, nil)
 
-	var resultStr interface{}
+	request := httplib.Post(url)
+	request.JSONBody(config)
 
-	err := result.ExtractInto(resultStr)
+	resp, err := request.DoRequest()
+	if err != nil {
+		return err
+	}
 
-	return resultStr, err
+	if resp.StatusCode != 202 {
+		return errors.New("Execute Fencer failed")
+	}
+
+	return nil
 }

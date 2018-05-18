@@ -101,28 +101,28 @@ func HostUpdate(id int, host *Host) error {
 	return err
 }
 
-func HostUpdateFields(host *Host, fields ...string) error {
+/*func HostUpdateFields(host *Host, fields ...string) error {
 	_, err := engine.ID(host.Id).Cols(fields...).Update(host)
 	return err
-}
+}*/
 
-/*func HostUpdateFields(host *Host, fields ...string) error {
+func HostUpdateFields(host *Host, fields ...string) error {
 
-	sql := "update host set update_at = now()"
+	sql := "update host set updated_at= now()"
 	for _, field := range fields{
 
 		var subsql string
 
-		if fields == "name" {
-			subsql = ", name = " + host.Name
-		} else if fields == "notified" {
-			subsql = ", notified = " + host.Notified
+		if field == "name" {
+			subsql = fmt.Sprint(", name = '", host.Name, "'")
+		} else if field == "notified" {
+			subsql = fmt.Sprint(", notified = ", host.Notified)
 		} else if field == "disabled" {
-			subsql = ", disabled" + host.Disabled
+			subsql = fmt.Sprint(", disabled = ", host.Disabled)
 		} else if field == "status" {
-			subsql = ", status" + host.Status
+			subsql = fmt.Sprint(", status = '", host.Status, "'")
 		} else if field == "fenced_times" {
-			subsql = ", fenced_times" + host.FencedTimes
+			subsql = fmt.Sprint(", fenced_times = ", host.FencedTimes)
 		} else {
 			subsql = ""
 		}
@@ -130,7 +130,11 @@ func HostUpdateFields(host *Host, fields ...string) error {
 		sql += subsql
 	}
 
-	sql = sql + "where id = " + host.Id
+	where := fmt.Sprint(" where id = ", host.Id, ";")
+
+	sql += where
+
+	plog.Debug("sql:", sql)
 
 	res, err := engine.Exec(sql)
 	if err != nil {
@@ -142,7 +146,7 @@ func HostUpdateFields(host *Host, fields ...string) error {
 	}
 
 	return nil
-}*/
+}
 
 func HostDelete(id int) error {
 	_, err := engine.ID(id).Delete(new(Host))

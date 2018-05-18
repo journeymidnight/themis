@@ -185,7 +185,7 @@ func (p *PolicyEngine) HandleEvents(events Events) {
 			return
 		}
 		// update host status
-		plog.Debugf("update %s's FSM.", hostname)
+		//plog.Debugf("update %s's FSM.", hostname)
 		updateHostFSM(host, states)
 
 		// judge if a host is down

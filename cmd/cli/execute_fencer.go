@@ -25,12 +25,11 @@ func executeFencerFunc(cmd *cobra.Command, args []string) {
 
 	themis := client.NewThemisClient(globalFlags.Url)
 
-	str, err := themis.ExecuteFencerFunc(getHostId(args), configFile)
+	err := themis.ExecuteFencerFunc(getHostId(args), configFile)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	} else {
-		fmt.Sprintf("fence success.\n %s", str)
+		fmt.Println("fence success.")
 	}
-
 }

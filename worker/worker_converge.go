@@ -6,6 +6,7 @@ import (
 	"github.com/ljjjustin/themis/utils"
 
 	"github.com/astaxie/beego/httplib"
+	"errors"
 )
 
 var convergeDecisionMatrix = []bool{
@@ -131,7 +132,7 @@ func (w *ConvergeWorker) Evacuate(host *database.Host) error {
 
 	if resp.StatusCode != 202 {
 		plog.Warningf("catkeeper evacuate host : %s vm failed", host.Name)
-		return err
+		return errors.New("catkeeper evacuate host : " + host.Name + " vm failed")
 	}
 
 	return nil

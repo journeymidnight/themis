@@ -10,6 +10,7 @@ import (
 	"github.com/coreos/pkg/capnslog"
 	"crypto/tls"
 	"errors"
+	"strings"
 )
 
 var plog = capnslog.NewPackageLogger("github.com/ljjjustin/themis", "mail")
@@ -44,11 +45,14 @@ func saveHost(host *database.Host) {
 	database.HostUpdateFields(host, "notified", "fenced_times")
 }
 
-func sendMail(user, password, host, subject, body string, to []string) error {
+func sendMail(from, password, host, subject, body string, to []string) error {
+
+	split := strings.Split(from, "@")
+	user := split[0]
 
 	auth := NewLoginAuth(user, password)
 
-	err := SendToMail(host, auth, user, to, body, subject)
+	err := SendToMail(host, auth, from, to, body, subject)
 
 	return err
 }

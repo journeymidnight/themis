@@ -32,6 +32,7 @@ func SendAlert(config *config.ThemisConfig, host *database.Host) {
 	err := sendMail(config.Mail.SmtpUser, config.Mail.SmtpPassword, config.Mail.SmtpHost, subject, body, to)
 	if err != nil {
 		plog.Warningf("send notification mail to %s failed : %s", to, err)
+		return
 	}
 
 	plog.Info("send notification mail to ", to, " success.")

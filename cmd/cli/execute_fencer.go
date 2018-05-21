@@ -25,6 +25,11 @@ func executeFencerFunc(cmd *cobra.Command, args []string) {
 
 	themis := client.NewThemisClient(globalFlags.Url)
 
+	if configFile == "" {
+		fmt.Println("ERROR: you must use -c to specify configFile")
+		os.Exit(-1)
+	}
+
 	err := themis.ExecuteFencerFunc(getHostId(args), configFile)
 	if err != nil {
 		fmt.Println(err)

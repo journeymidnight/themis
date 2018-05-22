@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-const configFile  =  "/etc/themis/themis/toml"
+const configFile  =  "/etc/themis/themis.toml"
 
 func ExecuateFencerCommand() *cobra.Command {
 	cmd := cobra.Command{

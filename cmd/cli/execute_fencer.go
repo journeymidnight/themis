@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-var configFile string
+const configFile  =  "/etc/themis/themis/toml"
 
 func ExecuateFencerCommand() *cobra.Command {
 	cmd := cobra.Command{
@@ -16,19 +16,12 @@ func ExecuateFencerCommand() *cobra.Command {
 		Run:   executeFencerFunc,
 	}
 
-	cmd.Flags().StringVarP(&configFile, "config", "c", "", "Path to toml config file.")
-
 	return &cmd
 }
 
 func executeFencerFunc(cmd *cobra.Command, args []string) {
 
 	themis := client.NewThemisClient(globalFlags.Url)
-
-	if configFile == "" {
-		fmt.Println("ERROR: you must use -c to specify configFile")
-		os.Exit(-1)
-	}
 
 	err := themis.ExecuteFencerFunc(getHostId(args), configFile)
 	if err != nil {

@@ -45,8 +45,9 @@ type DatabaseConfig struct {
 }
 
 type MonitorConfig struct {
-	Type    string
-	Address string
+	Type    	string
+	Address 	string
+	JoinAddrs 	[]string
 }
 
 type FenceConfig struct {

@@ -135,10 +135,12 @@ func (w *OpenstackWorker) Evacuate(host *database.Host) error {
 		status := strings.ToLower(computeService.Status)
 		if status != "disabled" {
 			nova.DisableService(computeService, "disabled by themis monitor")
+			plog.Infof("disable nova-compute on host :", host.Name)
 		}
 
 		state := strings.ToLower(computeService.State)
 		if state != "up" {
+			plog.Infof("nova-compute is down on host :", host.Name)
 			break
 		}
 
@@ -154,6 +156,8 @@ func (w *OpenstackWorker) Evacuate(host *database.Host) error {
 		plog.Warning("Can't get service list: ", err)
 		return err
 	}
+	plog.Infof("get nova servers number :", len(servers))
+
 	for _, server := range servers {
 		id := server.ID
 		plog.Infof("Try to evacuate instance: %s", id)

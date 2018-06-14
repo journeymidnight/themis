@@ -94,15 +94,20 @@ func (w *OpenstackWorker) FenceHost(host *database.Host) {
 	if err != nil {
 		return
 	}
+	plog.Infof("fence host %s success.", host.Name)
 
 	// update host status
 	host.Status = utils.HostFencedStatus
 	saveHost(host)
 
+	plog.Infof("begin evacuate function host %s", host.Name)
+
 	err = w.Evacuate(host)
 	if err != nil {
 		return
 	}
+
+	plog.Infof("evacuate host %s success", host.Name)
 
 	// disable host status
 	host.Status = utils.HostEvacuatedStatus
@@ -118,6 +123,8 @@ func (w *OpenstackWorker) Evacuate(host *database.Host) error {
 		plog.Warning("Can't create nova client: ", err)
 		return err
 	}
+
+	plog.Infof("get nova client success.")
 
 	for {
 		var computeService services.Service
@@ -146,6 +153,8 @@ func (w *OpenstackWorker) Evacuate(host *database.Host) error {
 
 		time.Sleep(10 * time.Second)
 	}
+
+	plog.Infof("begin evacuate host %s.", host.Name)
 
 	// update host status
 	host.Status = utils.HostEvacuatingStatus

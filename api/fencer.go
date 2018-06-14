@@ -18,7 +18,10 @@ func init() {
 
 func FenceOneHost(c *gin.Context) {
 
+	plog.Infof("fence host api begin.")
+
 	id := GetId(c, "id")
+	plog.Infof("get host id %d", id)
 
 	var conf ConfigFile
 
@@ -30,6 +33,7 @@ func FenceOneHost(c *gin.Context) {
 	} else if host == nil {
 		AbortWithError(http.StatusNotFound, err)
 	}
+	plog.Infof("get host %s success", host.Name)
 
 	states, err := database.StateGetAll(id)
 	if err != nil {
@@ -45,6 +49,7 @@ func FenceOneHost(c *gin.Context) {
 	worker := worker.NewWorker(themisCfg)
 
 	if worker.GetDecision(host, states) {
+		plog.Infof("into fencer host worker")
 		worker.FenceHost(host)
 		c.JSON(http.StatusAccepted, host)
 	} else {

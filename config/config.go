@@ -53,7 +53,7 @@ type MonitorConfig struct {
 }
 
 type SerfConfig struct {
-	HostName string
+	Hostname string
 }
 
 type FenceConfig struct {

@@ -66,7 +66,7 @@ func (agent *ThemisAgent) Start() {
 
 	serfCtx, _ := context.WithCancel(agent.context)
 	for tag, monitor := range agent.config.Monitors {
-		go keepRunning(serfCtx, tag, monitor.Address, monitor.JoinAddrs, agent.config.Serf.HostName)
+		go keepRunning(serfCtx, tag, monitor.Address, monitor.JoinAddrs, agent.config.Serf.Hostname)
 	}
 
 	// handler os signals

@@ -66,7 +66,7 @@ func (agent *ThemisAgent) Start() {
 
 	serfCtx, _ := context.WithCancel(agent.context)
 	for tag, monitor := range agent.config.Monitors {
-		go keepRunning(serfCtx, tag, monitor.Address, monitor.JoinAddrs)
+		go keepRunning(serfCtx, tag, monitor.Address, monitor.JoinAddrs, agent.config.Serf.HostName)
 	}
 
 	// handler os signals
@@ -78,7 +78,7 @@ func (agent *ThemisAgent) Start() {
 	}
 }
 
-func keepRunning(ctx context.Context, tag, address string, joinAddrs []string) {
+func keepRunning(ctx context.Context, tag, address string, joinAddrs []string, hostname string) {
 	quit := make(chan struct{})
 
 	for {
@@ -93,7 +93,7 @@ func keepRunning(ctx context.Context, tag, address string, joinAddrs []string) {
 			args := []string{
 				fmt.Sprintf("systemd-run serf agent"),
 				fmt.Sprintf("-iface=%s", iface),
-				fmt.Sprintf("-rpc-addr=%s -tag network=%s", address, tag),
+				fmt.Sprintf("-rpc-addr=%s -tag network=%s -node=%s", address, tag, hostname),
 			}
 
 			for _, joinAddr := range joinAddrs {

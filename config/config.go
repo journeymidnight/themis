@@ -23,6 +23,8 @@ type ThemisConfig struct {
 	Database DatabaseConfig
 	Monitors map[string]MonitorConfig
 
+	Serf SerfConfig
+
 	Fence FenceConfig
 
 	Worker WorkerConfig
@@ -48,6 +50,10 @@ type MonitorConfig struct {
 	Type    	string
 	Address 	string
 	JoinAddrs 	[]string
+}
+
+type SerfConfig struct {
+	HostName string
 }
 
 type FenceConfig struct {
